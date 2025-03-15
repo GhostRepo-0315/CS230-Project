@@ -3,65 +3,167 @@ import { Box, Button, LinearProgress, Typography } from "@mui/material";
 import { useDropzone } from "react-dropzone";
 import axios from "axios";
 
-/**
- * Component for uploading files with drag & drop support.
- * Includes a progress bar for better user experience.
- */
-const FileUpload: React.FC = () => {
-    const [files, setFiles] = useState<File[]>([]); // Store selected files
-    const [uploadProgress, setUploadProgress] = useState<number>(0); // Upload progress
+const CHUNK_SIZE = 1024 * 1024; // 1MB chunk size
 
-    /**
-     * Handles file selection using drag & drop or manual selection.
-     * @param acceptedFiles - Array of selected files
-     */
+const FileUpload: React.FC = () => {
+    const [files, setFiles] = useState<File[]>([]);
+    const [uploadProgress, setUploadProgress] = useState<number>(0);
+
     const onDrop = (acceptedFiles: File[]) => {
         setFiles(acceptedFiles);
-        setUploadProgress(0); // Reset progress when new files are added
+        setUploadProgress(0);
     };
 
-    // React Dropzone hook for handling drag & drop
     const { getRootProps, getInputProps } = useDropzone({
         onDrop,
-        multiple: true, // Allow multiple file uploads
+        multiple: true,
         accept: {
-            "image/*": [], // Allow all image files
-            "application/pdf": [], // Allow PDFs
-            "text/plain": [], // Allow text files
+            "image/*": [],
+            "application/pdf": [],
+            "text/plain": [],
         },
     });
 
     /**
-     * Handles the file upload process.
-     * Uses axios to send files to the backend and tracks upload progress.
+     * Uploads file in chunks
+     * @param file - The file to be uploaded
      */
-    const handleUpload = async () => {
+    // const uploadFileInChunks = async (file: File) => {
+    //     const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
+    //     const fileId = `${file.name}-${Date.now()}`; // Unique file identifier
+
+    //     // Step 1: Send metadata to backend
+    //     try {
+    //         await axios.post("http://localhost:7001/upload/metadata", {
+    //             fileName: file.name,
+    //             fileSize: file.size,
+    //             totalChunks,
+    //             fileId
+    //         });
+    //     } catch (error) {
+    //         console.error("Error sending metadata:", error);
+    //         alert("Failed to send metadata");
+    //         return;
+    //     }
+
+    //     // Step 2: Upload chunks
+    //     for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
+    //         const start = chunkIndex * CHUNK_SIZE;
+    //         const end = Math.min(start + CHUNK_SIZE, file.size);
+    //         const chunk = file.slice(start, end);
+
+    //         const formData = new FormData();
+    //         formData.append("fileId", fileId);
+    //         formData.append("chunkIndex", chunkIndex.toString());
+    //         formData.append("chunk", chunk);
+
+    //         try {
+    //             await axios.post("http://localhost:7001/upload/chunk", formData, {
+    //                 headers: { "Content-Type": "multipart/form-data" },
+    //                 withCredentials: true
+    //             });
+
+    //             // Update progress
+    //             setUploadProgress(Math.round(((chunkIndex + 1) / totalChunks) * 100));
+
+    //         } catch (error) {
+    //             console.error("Chunk upload failed:", error);
+    //             alert("Upload failed, please try again.");
+    //             return;
+    //         }
+    //     }
+
+    //     // Step 3: Notify backend that upload is complete
+    //     try {
+    //         await axios.post("http://localhost:7001/upload/complete", { fileId });
+    //         alert("Upload completed!");
+    //     } catch (error) {
+    //         console.error("Error finalizing upload:", error);
+    //         alert("Upload finalization failed");
+    //     }
+    // };
+
+    const uploadFileInChunks = async (file: File) => {
+        const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
+        const fileId = `${file.name}-${Date.now()}`;
+
+        console.log(`📌 Uploading ${file.name} in ${totalChunks} chunks`);
+
+        for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
+            const start = chunkIndex * CHUNK_SIZE;
+            const end = Math.min(start + CHUNK_SIZE, file.size);
+            const chunk = file.slice(start, end);
+
+            console.log(`📤 Sending chunk ${chunkIndex}: bytes [${start} - ${end}]`);
+
+            const formData = new FormData();
+            formData.append("fileId", fileId);
+            formData.append("chunkIndex", chunkIndex.toString());
+            formData.append("chunk", chunk);
+            formData.append("totalChunks", totalChunks.toString());
+
+            try {
+                await axios.post("http://localhost:7001/upload/chunk", formData, {
+                    headers: { "Content-Type": "multipart/form-data" },
+                    withCredentials: true
+                });
+
+                setUploadProgress(Math.round(((chunkIndex + 1) / totalChunks) * 100));
+
+            } catch (error) {
+                console.error("❌ Chunk upload failed:", error);
+                alert("Upload failed, please try again.");
+                return;
+            }
+        }
+        const uploadFileInChunks = async (file: File) => {
+            const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
+            const fileId = `${file.name}-${Date.now()}`;
+
+            for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
+                const start = chunkIndex * CHUNK_SIZE;
+                const end = Math.min(start + CHUNK_SIZE, file.size);
+                const chunk = file.slice(start, end);
+
+                const formData = new FormData();
+                formData.append("fileId", fileId);
+                formData.append("chunkIndex", chunkIndex.toString());
+                formData.append("chunk", chunk);
+                formData.append("totalChunks", totalChunks.toString());
+
+                try {
+                    await axios.post("http://localhost:7001/upload/chunk", formData, {
+                        headers: { "Content-Type": "multipart/form-data" },
+                        withCredentials: true
+                    });
+
+                    setUploadProgress(Math.round(((chunkIndex + 1) / totalChunks) * 100));
+                } catch (error) {
+                    alert("Upload failed, please try again.");
+                    return;
+                }
+            }
+        };
+
+        // Step 3: Notify backend that upload is complete
+        try {
+            await axios.post("http://localhost:7001/upload/complete", { fileId });
+            alert("Upload completed!");
+        } catch (error) {
+            console.error("Error finalizing upload:", error);
+            alert("Upload finalization failed");
+        }
+    };
+
+    const handleUpload = () => {
         if (files.length === 0) {
             alert("Please select a file to upload.");
             return;
         }
-    
-        const formData = new FormData();
-        files.forEach((file) => formData.append("files", file));
-    
-        try {
-            // Send the file to the backend and store the response
-            const response = await axios.post("http://localhost:7001/upload", formData, {
-                headers: {
-                  "Content-Type": "multipart/form-data",
-                },
-                withCredentials: true, // Ensure cookies and CORS headers are sent
-              });
 
-            console.log("Server Response:", response.data); // Debug log to check response
-            alert("Upload successful!");
-    
-        } catch (error) {
-            console.error("Upload failed:", error);
-            alert("Upload failed. Please try again.");
-        }
+        // Upload each file in chunks
+        files.forEach(uploadFileInChunks);
     };
-    
 
     return (
         <Box sx={{ width: "50%", margin: "auto", textAlign: "center", mt: 4, p: 2, border: "1px dashed #aaa" }}>
@@ -69,13 +171,11 @@ const FileUpload: React.FC = () => {
                 File Upload System
             </Typography>
 
-            {/* Drag & Drop Area */}
             <Box {...getRootProps()} sx={{ p: 3, backgroundColor: "#f8f8f8", border: "2px dashed #007bff", cursor: "pointer" }}>
                 <input {...getInputProps()} />
                 <Typography>Drag & drop files here, or click to select</Typography>
             </Box>
 
-            {/* Selected File List */}
             {files.length > 0 && (
                 <Box sx={{ mt: 2 }}>
                     <Typography variant="subtitle1">Selected Files:</Typography>
@@ -87,7 +187,6 @@ const FileUpload: React.FC = () => {
                 </Box>
             )}
 
-            {/* Upload Progress Bar */}
             {uploadProgress > 0 && (
                 <Box sx={{ mt: 2 }}>
                     <LinearProgress variant="determinate" value={uploadProgress} />
@@ -95,7 +194,6 @@ const FileUpload: React.FC = () => {
                 </Box>
             )}
 
-            {/* Upload Button */}
             <Button variant="contained" color="primary" onClick={handleUpload} sx={{ mt: 2 }} disabled={files.length === 0}>
                 Upload
             </Button>
