@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Upload</title>
+</head>
+<body>
+    <h1>File Upload</h1>
+    <input type="file" id="fileInput">
+    <button onclick="uploadFile()">Upload</button>
+    <p id="status"></p>
+
+    <script>
+        const MAIN_SERVER = "http://54.215.233.245:7001";  // 主服务器地址
+        const CHUNK_SIZE = 1024 * 1024;  // 1MB
+	console.log('start');
+        async function uploadFile() {
+            const fileInput = document.getElementById('fileInput');
+            const status = document.getElementById('status');
+            const file = fileInput.files[0];
+            if (!file) {
+                status.textContent = 'Please select a file.';
+                return;
+            }
+
+            const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
+            const fileId = Date.now().toString();  // 生成唯一的文件ID
+
+            // Step 1: 上传元数据到主服务器
+            status.textContent = 'Uploading metadata...';
+            try {
+                const metadataResponse = await fetch(`${MAIN_SERVER}/upload/metadata`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        fileId: fileId,
+                        fileName: file.name,
+                        totalChunks: totalChunks,
+                    }),
+                });
+
+                if (!metadataResponse.ok) {
+                    const errorData = await metadataResponse.json();
+                    throw new Error(`Failed to upload metadata: ${errorData.error || metadataResponse.statusText}`);
+                }
+            } catch (error) {
+                status.textContent = `Error: ${error.message}`;
+                return;
+            }
+
+            // Step 2: 上传分片到节点服务器
+            for (let i = 0; i < totalChunks; i++) {
+                const start = i * CHUNK_SIZE;
+                const end = Math.min(start + CHUNK_SIZE, file.size);
+                const chunk = file.slice(start, end);
+
+                // Step 2.1: 获取分片分配的节点服务器
+                status.textContent = `Assigning chunk ${i + 1} of ${totalChunks}...`;
+		console.log(status.textContent);
+                let nodeServer;
+                try {
+                    const assignResponse = await fetch(`${MAIN_SERVER}/upload/assign`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            fileId: fileId,
+                            chunkIndex: i,
+                        }),
+                    });
+
+                    if (!assignResponse.ok) {
+                        const errorData = await assignResponse.json();
+                        throw new Error(`Failed to assign chunk: ${errorData.error || assignResponse.statusText}`);
+                    }
+
+                    const data = await assignResponse.json();
+                    nodeServer = data.node_server;
+                } catch (error) {
+                    status.textContent = `Error: ${error.message}`;
+                    return;
+                }
+
+                // Step 2.2: 上传分片到分配的节点服务器
+                status.textContent = `Uploading chunk ${i + 1} of ${totalChunks} to ${nodeServer}...`;
+                try {
+                    const formData = new FormData();
+                    formData.append('fileId', fileId);
+                    formData.append('chunkIndex', i);
+                    formData.append('chunk', chunk, `chunk_${i}`);
+
+                    const chunkResponse = await fetch(`${nodeServer}/upload/chunk`, {
+                        method: 'POST',
+                        body: formData,
+                    });
+
+                    if (!chunkResponse.ok) {
+                        const errorData = await chunkResponse.json();
+                        throw new Error(`Failed to upload chunk: ${errorData.error || chunkResponse.statusText}`);
+                    }
+		    console.log(i);
+                    // Step 2.3: 通知主服务器更新 metadata
+                    const updateResponse = await fetch(`${MAIN_SERVER}/upload/update`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            fileId: fileId,
+                            chunkIndex: i,
+                        }),
+                    });
+
+                    if (!updateResponse.ok) {
+                        const errorData = await updateResponse.json();
+                        throw new Error(`Failed to update metadata: ${errorData.error || updateResponse.statusText}`);
+                    }
+                } catch (error) {
+                    status.textContent = `Error: ${error.message}`;
+                    return;
+                }
+            }
+
+            // Step 3: 通知主服务器上传完成
+            status.textContent = 'Completing upload...';
+	    console.log(status.textContent);
+            try {
+                const completeResponse = await fetch(`${MAIN_SERVER}/upload/complete`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        fileId: fileId,
+                    }),
+                });
+
+                if (!completeResponse.ok) {
+                    const errorData = await completeResponse.json();
+                    throw new Error(`Failed to complete upload: ${errorData.error || completeResponse.statusText}`);
+                }
+
+                status.textContent = 'File upload complete!';
+            } catch (error) {
+                status.textContent = `Error: ${error.message}`;
+            }
+        }
+    </script>
+</body>
+</html>

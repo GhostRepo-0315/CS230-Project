@@ -1,185 +1,346 @@
 {
-    "example.pdf-1710460800": {
-        "file_name": "example.pdf",
-        "total_chunks": 5,
+    "1742161222058": {
+        "file_name": "Homework 3.pdf",
+        "total_chunks": 1,
+        "uploaded_chunks": [],
+        "chunks": {
+            "0": "http://54.67.117.71:7001"
+        }
+    },
+    "1742161251157": {
+        "file_name": "Homework 3.pdf",
+        "total_chunks": 1,
+        "uploaded_chunks": [],
+        "chunks": {
+            "0": "http://52.53.207.217:7001"
+        }
+    },
+    "1742161639953": {
+        "file_name": "Homework 2.pdf",
+        "total_chunks": 1,
+        "uploaded_chunks": [],
+        "chunks": {
+            "0": "http://54.67.117.71:7001"
+        }
+    },
+    "1742163309778": {
+        "file_name": "Homework 3.pdf",
+        "total_chunks": 1,
+        "uploaded_chunks": [],
+        "chunks": {
+            "0": "http://18.144.171.222:7001"
+        }
+    },
+    "1742164620448": {
+        "file_name": "Homework 3.pdf",
+        "total_chunks": 1,
+        "uploaded_chunks": [],
+        "chunks": {
+            "0": "http://54.67.117.71:7001"
+        }
+    },
+    "1742165333570": {
+        "file_name": "Homework 3.pdf",
+        "total_chunks": 1,
+        "uploaded_chunks": [],
+        "chunks": {
+            "0": "http://52.53.207.217:7001"
+        }
+    },
+    "1742165356580": {
+        "file_name": "Homework 3.pdf",
+        "total_chunks": 1,
+        "uploaded_chunks": [],
+        "chunks": {
+            "0": "http://52.53.207.217:7001"
+        }
+    },
+    "1742165585285": {
+        "file_name": "Homework 2.pdf",
+        "total_chunks": 1,
+        "chunks": {
+            "0": "http://52.53.207.217:7001"
+        }
+    },
+    "1742166685830": {
+        "file_name": "Homework 2.pdf",
+        "total_chunks": 1,
+        "uploaded_chunks": [],
+        "chunks": {
+            "0": "http://54.67.117.71:7001"
+        }
+    },
+    "1742184544932": {
+        "file_name": "output.png",
+        "total_chunks": 1,
+        "uploaded_chunks": [],
+        "chunks": {
+            "0": "http://52.53.207.217:7001"
+        }
+    },
+    "1742185060452": {
+        "file_name": "output.png",
+        "total_chunks": 1,
+        "uploaded_chunks": [],
+        "chunks": {
+            "0": "http://18.144.171.222:7001"
+        }
+    },
+    "1742185600365": {
+        "file_name": "output.png",
+        "total_chunks": 1,
+        "uploaded_chunks": [],
+        "chunks": {
+            "0": "http://54.67.117.71:7001"
+        }
+    },
+    "1742185672475": {
+        "file_name": "Homework 3.pdf",
+        "total_chunks": 1,
+        "uploaded_chunks": [],
+        "chunks": {
+            "0": "http://18.144.171.222:7001"
+        }
+    },
+    "1742186277481": {
+        "file_name": "output.png",
+        "total_chunks": 1,
+        "uploaded_chunks": [],
+        "chunks": {
+            "0": "http://18.144.171.222:7001"
+        }
+    },
+    "1742187110012": {
+        "file_name": "HW 4.pdf",
+        "total_chunks": 2,
+        "uploaded_chunks": [
+            1
+        ],
+        "chunks": {
+            "0": "http://18.144.171.222:7001",
+            "1": "http://52.53.207.217:7001"
+        }
+    },
+    "1742188622683": {
+        "file_name": "MSCS Unofficial Transcript.png",
+        "total_chunks": 1,
         "uploaded_chunks": [
             0
-        ]
+        ],
+        "chunks": {
+            "0": "http://52.53.207.217:7001"
+        }
     },
-    "Homework 1_Yubin.pdf-1741991895455": {
-        "file_name": "Homework 1_Yubin.pdf",
-        "total_chunks": 3,
-        "uploaded_chunks": []
-    },
-    "Homework 2 _ Yubin.pdf-1741993528887": {
-        "file_name": "Homework 2 _ Yubin.pdf",
+    "1742189445045": {
+        "file_name": "MSCS Unofficial Transcript.png",
         "total_chunks": 1,
-        "uploaded_chunks": []
+        "uploaded_chunks": [],
+        "chunks": {
+            "0": "http://52.53.207.217:7001"
+        }
     },
-    "Homework 1_Yubin.pdf-1741993551174": {
-        "file_name": "Homework 1_Yubin.pdf",
-        "total_chunks": 3,
+    "1742189502035": {
+        "file_name": "output.png",
+        "total_chunks": 1,
         "uploaded_chunks": [
-            0,
-            1,
-            2
-        ]
+            0
+        ],
+        "chunks": {
+            "0": "http://52.53.207.217:7001"
+        }
     },
-    "Homework 1_Yubin.pdf-1741994119850": {
-        "file_name": "Homework 1_Yubin.pdf",
-        "total_chunks": 3,
+    "1742189710042": {
+        "file_name": "output.png",
+        "total_chunks": 1,
         "uploaded_chunks": [
-            0,
-            1,
-            2
-        ]
+            0
+        ],
+        "chunks": {
+            "0": "http://52.53.207.217:7001"
+        }
     },
-    "Homework 1_Yubin.pdf-1741994234390": {
-        "file_name": "Homework 1_Yubin.pdf",
-        "total_chunks": 3,
+    "1742189911422": {
+        "file_name": "output.png",
+        "total_chunks": 1,
         "uploaded_chunks": [
-            0,
-            1,
-            2
-        ]
+            0
+        ],
+        "chunks": {
+            "0": "http://18.144.171.222:7001"
+        }
     },
-    "Homework 1_Yubin.pdf-1741994348213": {
-        "file_name": "Homework 1_Yubin.pdf",
-        "total_chunks": 3,
+    "1742190286088": {
+        "file_name": "output.png",
+        "total_chunks": 1,
         "uploaded_chunks": [
-            0,
-            1,
-            2
-        ]
+            0
+        ],
+        "chunks": {
+            "0": "http://18.144.171.222:7001"
+        }
     },
-    "Homework 1_Yubin.pdf-1741994455303": {
-        "file_name": "Homework 1_Yubin.pdf",
-        "total_chunks": 3,
-        "uploaded_chunks": []
-    },
-    "28319776_1653456991849.pdf-1741994503376": {
-        "file_name": "28319776_1653456991849.pdf",
-        "total_chunks": 5,
-        "uploaded_chunks": []
-    },
-    "IMG_4349.JPG-1741995152633": {
-        "file_name": "IMG_4349.JPG-1741995152633",
-        "total_chunks": 0,
+    "1742190376425": {
+        "file_name": "output.png",
+        "total_chunks": 1,
         "uploaded_chunks": [
-            0,
-            1,
-            2,
-            3,
-            4
-        ]
+            0
+        ],
+        "chunks": {
+            "0": "http://18.144.171.222:7001"
+        }
     },
-    "28319776_1653456991849.pdf-1741995196436": {
-        "file_name": "28319776_1653456991849.pdf-1741995196436",
-        "total_chunks": 0,
+    "1742190420817": {
+        "file_name": "output.png",
+        "total_chunks": 1,
         "uploaded_chunks": [
-            0,
-            1,
-            2,
-            3,
-            4
-        ]
+            0
+        ],
+        "chunks": {
+            "0": "http://54.67.117.71:7001"
+        }
     },
-    "28319776_1653456991849.pdf-1741996057161": {
-        "file_name": "28319776_1653456991849.pdf-1741996057161",
-        "total_chunks": 0,
+    "1742190849627": {
+        "file_name": "output.png",
+        "total_chunks": 1,
         "uploaded_chunks": [
-            0,
-            0,
-            1,
-            1,
-            2,
-            2,
-            3,
-            3,
-            4,
-            4
-        ]
+            0
+        ],
+        "chunks": {
+            "0": "http://52.53.207.217:7001"
+        }
     },
-    "28319776_1653456991849.pdf-1741996311123": {
-        "file_name": "28319776_1653456991849.pdf-1741996311123",
-        "total_chunks": 0,
+    "1742190933708": {
+        "file_name": "output.png",
+        "total_chunks": 1,
         "uploaded_chunks": [
-            0,
-            0,
-            1,
-            1,
-            2,
-            2,
-            3,
-            3,
-            4,
-            4
-        ]
+            0
+        ],
+        "chunks": {
+            "0": "http://52.53.207.217:7001"
+        }
     },
-    "28319776_1653456991849.pdf-1741996507652": {
-        "file_name": "28319776_1653456991849.pdf-1741996507652",
-        "total_chunks": 0,
+    "1742191683919": {
+        "file_name": "output.png",
+        "total_chunks": 1,
         "uploaded_chunks": [
-            0,
-            1,
-            2,
-            3,
-            4
-        ]
+            0
+        ],
+        "chunks": {
+            "0": "http://52.53.207.217:7001"
+        }
     },
-    "28319776_1653456991849.pdf-1741997167619": {
-        "file_name": "28319776_1653456991849.pdf-1741997167619",
-        "total_chunks": 0,
+    "1742191880745": {
+        "file_name": "output.png",
+        "total_chunks": 1,
         "uploaded_chunks": [
-            0,
-            1,
-            2,
-            3,
-            4
-        ]
+            0
+        ],
+        "chunks": {
+            "0": "http://52.53.207.217:7001"
+        }
     },
-    "28319776_1653456991849.pdf-1741997241634": {
-        "file_name": "28319776_1653456991849.pdf-1741997241634",
-        "total_chunks": 0,
+    "1742191970531": {
+        "file_name": "output.png",
+        "total_chunks": 1,
         "uploaded_chunks": [
-            0,
-            1,
-            2,
-            3,
-            4
-        ]
+            0
+        ],
+        "chunks": {
+            "0": "http://18.144.171.222:7001"
+        }
     },
-    "28319776_1653456991849.pdf-1741997255159": {
-        "file_name": "28319776_1653456991849.pdf-1741997255159",
-        "total_chunks": 0,
+    "1742192105619": {
+        "file_name": "output.png",
+        "total_chunks": 1,
         "uploaded_chunks": [
-            0,
-            1,
-            2,
-            3,
-            4
-        ]
+            0
+        ],
+        "chunks": {
+            "0": "http://52.53.207.217:7001"
+        }
     },
-    "28319776_1653456991849.pdf-1741997318504": {
-        "file_name": "28319776_1653456991849.pdf-1741997318504",
-        "total_chunks": 5,
+    "1742192243738": {
+        "file_name": "output.png",
+        "total_chunks": 1,
         "uploaded_chunks": [
-            0,
-            1,
-            2,
-            3,
-            4
-        ]
+            0
+        ],
+        "chunks": {
+            "0": "http://52.53.207.217:7001"
+        }
     },
-    "28319776_1653456991849.pdf-1741997438378": {
-        "file_name": "28319776_1653456991849.pdf-1741997438378",
-        "total_chunks": 5,
+    "1742192559111": {
+        "file_name": "output.png",
+        "total_chunks": 1,
         "uploaded_chunks": [
-            0,
-            1,
-            2,
-            3,
-            4
-        ]
+            0
+        ],
+        "chunks": {
+            "0": "http://54.67.117.71:7001"
+        }
+    },
+    "1742192667756": {
+        "file_name": "output.png",
+        "total_chunks": 1,
+        "uploaded_chunks": [
+            0
+        ],
+        "chunks": {
+            "0": "http://18.144.171.222:7001"
+        }
+    },
+    "1742194568764": {
+        "file_name": "output.png",
+        "total_chunks": 1,
+        "uploaded_chunks": [
+            0
+        ],
+        "chunks": {
+            "0": "http://52.53.207.217:7001"
+        }
+    },
+    "1742194815549": {
+        "file_name": "output.png",
+        "total_chunks": 1,
+        "uploaded_chunks": [
+            0
+        ],
+        "chunks": {
+            "0": "http://18.144.171.222:7001"
+        }
+    },
+    "1742194960524": {
+        "file_name": "output.png",
+        "total_chunks": 1,
+        "uploaded_chunks": [
+            0
+        ],
+        "chunks": {
+            "0": "http://52.53.207.217:7001"
+        }
+    },
+    "1742195295970": {
+        "file_name": "output.png",
+        "total_chunks": 1,
+        "uploaded_chunks": [],
+        "chunks": {
+            "0": "http://54.67.117.71:7001"
+        }
+    },
+    "1742195308283": {
+        "file_name": "output.png",
+        "total_chunks": 1,
+        "uploaded_chunks": [],
+        "chunks": {
+            "0": "http://54.67.117.71:7001"
+        }
+    },
+    "1742195477952": {
+        "file_name": "output.png",
+        "total_chunks": 1,
+        "uploaded_chunks": [],
+        "chunks": {
+            "0": "http://54.67.117.71:7001"
+        }
     }
 }

@@ -1,11 +1,18 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 import os
 import json
+import requests
+import random
+
+# 节点服务器列表
+NODE_SERVERS = [
+    "http://52.53.207.217:7001",
+    "http://18.144.171.222:7001",
+    "http://54.67.117.71:7001"
+]
 
 METADATA_FILE = "uploads/metadata.json"
-
-
 # 加载已有的 metadata（如果有的话）
 if os.path.exists(METADATA_FILE):
     try:
@@ -17,7 +24,7 @@ if os.path.exists(METADATA_FILE):
 else:
     file_metadata = {}
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='../frontend', static_url_path='')
 CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 
 UPLOAD_FOLDER = "uploads"
@@ -28,7 +35,7 @@ os.makedirs(CHUNK_FOLDER, exist_ok=True)
 
 @app.route("/")
 def home():
-    return jsonify({"message": "Flask backend is running!"})
+    return send_from_directory(app.static_folder, 'index.html')
 
 ### **Step 1: 处理文件元数据**
 @app.route("/upload/metadata", methods=["POST"])
@@ -44,238 +51,94 @@ def upload_metadata():
     file_metadata[file_id] = {
         "file_name": file_name,
         "total_chunks": total_chunks,
-        "uploaded_chunks": [],  # 使用列表代替 set 以便 JSON 序列化
+        "uploaded_chunks": [],
+        "chunks": {}
     }
 
     # ✅ 每次写入 metadata.json
     with open(METADATA_FILE, "w") as f:
         json.dump(file_metadata, f)
 
-    print("qnmd")
-
     return jsonify({"message": "Metadata received", "fileId": file_id})
 
-### **Step 2: 处理文件分块上传**
-# @app.route("/upload/chunk", methods=["POST"])
-# def upload_chunk():
-#     file_id = request.form.get("fileId")
-#     chunk_index = request.form.get("chunkIndex")
-#     chunk = request.files.get("chunk")
+### **Step 2: 分配分片到节点服务器**
+@app.route("/upload/assign", methods=["POST"])
+def assign_chunk():
+    data = request.json
+    file_id = data.get("fileId")
+    chunk_index = data.get("chunkIndex")
 
-#     print(f"\n🔹 Received chunk {chunk_index} for file ID: {file_id}")
-    
-#     if not file_id or chunk_index is None or not chunk:
-#         return jsonify({"error": "Missing chunk data"}), 400
+    if not file_id or chunk_index is None:
+        return jsonify({"error": "Invalid request"}), 400
 
-#     chunk_index = int(chunk_index)
-#     chunk_filename = f"{file_id}_chunk_{chunk_index}"
-#     chunk_path = os.path.join(CHUNK_FOLDER, chunk_filename)
+    # 随机选择一个节点服务器
+    node_server = random.choice(NODE_SERVERS)
 
-#     # chunk.save(chunk_path)  # 保存分块
+    # 记录分片分配的节点服务器
+    if file_id not in file_metadata:
+        return jsonify({"error": "File ID not found in metadata"}), 400
+    file_metadata[file_id]["chunks"][chunk_index] = node_server
 
-#     # # 记录已上传的块
-#     # if file_id in file_metadata:
-#     #     file_metadata[file_id]["uploaded_chunks"].append(chunk_index)
+    with open(METADATA_FILE, "w") as f:
+        json.dump(file_metadata, f)
 
-#      # ✅ 保存分块
-#     try:
-#         chunk.save(chunk_path)
-#         print(f"✅ Chunk {chunk_index} saved to {chunk_path}")  # 打印成功信息
-#     except Exception as e:
-#         print(f"❌ Failed to save chunk: {e}")
-#         return jsonify({"error": "Failed to save chunk"}), 500
+    return jsonify({"node_server": node_server})
 
-#     # ✅ 读取 metadata.json 并更新已上传的分块
-#     with open(METADATA_FILE, "r") as f:
-#         content = f.read().strip()
-#         file_metadata = json.loads(content) if content else {}
+### **Step 3: 处理文件分块上传**
+@app.route("/upload/update", methods=["POST"])
+def update_metadata():
+    data = request.json
+    file_id = data.get("fileId")
+    chunk_index = data.get("chunkIndex")
+    print(chunk_index)
+    if not file_id or chunk_index is None:
+        return jsonify({"error": "Invalid request"}), 400
 
-#     if file_id in file_metadata:
-#         if chunk_index not in file_metadata[file_id]["uploaded_chunks"]:
-#             file_metadata[file_id]["uploaded_chunks"].append(chunk_index)
+    # 确保 metadata 文件存在
+    if not os.path.exists(METADATA_FILE):
+        return jsonify({"error": "metadata.json missing"}), 500
 
-#     # ✅ 更新 metadata.json
-#     with open(METADATA_FILE, "w") as f:
-#         json.dump(file_metadata, f, indent=4)
-
-#     return jsonify({"message": f"Chunk {chunk_index} uploaded"})
-@app.route("/upload/chunk", methods=["POST"])
-# def upload_chunk():
-#     file_id = request.form.get("fileId")
-#     chunk_index = request.form.get("chunkIndex")
-#     chunk = request.files.get("chunk")
-
-#     if not file_id or chunk_index is None or not chunk:
-#         return jsonify({"error": "Missing chunk data"}), 400
-
-#     chunk_index = int(chunk_index)
-#     chunk_filename = f"{file_id}_chunk_{chunk_index}"
-#     chunk_path = os.path.join(CHUNK_FOLDER, chunk_filename)
-
-#     # ✅ 保存分块
-#     chunk.save(chunk_path)
-#     print(f"✅ Chunk {chunk_index} saved to {chunk_path}")
-
-#     # ✅ 读取 metadata.json，避免数据丢失
-#     try:
-#         with open(METADATA_FILE, "r") as f:
-#             content = f.read().strip()
-#             file_metadata = json.loads(content) if content else {}
-#     except Exception as e:
-#         print(f"❌ Failed to read metadata.json: {e}")
-#         file_metadata = {}
-
-#     # ✅ 确保 `file_id` 存在
-#     if file_id not in file_metadata:
-#         print(f"⚠️ File ID {file_id} not found in metadata, creating new entry.")
-#         file_metadata[file_id] = {
-#             "file_name": file_id,
-#             "total_chunks": 0,  # 🚨 这里要正确填充
-#             "uploaded_chunks": []
-#         }
-
-#     # ✅ 确保 `uploaded_chunks` 是一个 **列表**
-#     if "uploaded_chunks" not in file_metadata[file_id]:
-#         file_metadata[file_id]["uploaded_chunks"] = []
-
-#     # ✅ 只添加 `chunkIndex`，避免重复
-#     if chunk_index not in file_metadata[file_id]["uploaded_chunks"]:
-#         file_metadata[file_id]["uploaded_chunks"].append(chunk_index)
-
-#     # 记录已上传的 chunk
-#     if file_id in file_metadata:
-#         file_metadata[file_id]["uploaded_chunks"].append(chunk_index)
-
-#     # 🚀 **保存 metadata.json**
-#     try:
-#         with open(METADATA_FILE, "w") as f:
-#             json.dump(file_metadata, f, indent=4)
-#         print(f"✅ metadata.json updated successfully for {file_id}")
-#     except Exception as e:
-#         print(f"❌ Failed to write metadata.json: {e}")
-
-#     return jsonify({"message": f"Chunk {chunk_index} uploaded"})
-def upload_chunk():
-    file_id = request.form.get("fileId")
-    chunk_index = request.form.get("chunkIndex")
-    chunk = request.files.get("chunk")
-
-    if not file_id or chunk_index is None or not chunk:
-        return jsonify({"error": "Missing chunk data"}), 400
-
-    chunk_index = int(chunk_index)
-    chunk_filename = f"{file_id}_chunk_{chunk_index}"
-    chunk_path = os.path.join(CHUNK_FOLDER, chunk_filename)
-
-    # ✅ **保存分块**
-    chunk.save(chunk_path)
-    print(f"✅ Chunk {chunk_index} saved to {chunk_path}")
-
-    # ✅ **读取 metadata.json**
+    # 读取 metadata
     try:
         with open(METADATA_FILE, "r") as f:
             content = f.read().strip()
             file_metadata = json.loads(content) if content else {}
     except Exception as e:
-        print(f"❌ Failed to read metadata.json: {e}")
-        file_metadata = {}
+        return jsonify({"error": f"Failed to read metadata: {e}"}), 500
 
-    # ✅ **确保 `file_id` 存在**
+    # 确保 file_id 存在
     if file_id not in file_metadata:
-        print(f"⚠️ File ID {file_id} not found in metadata, creating new entry.")
-        file_metadata[file_id] = {
-            "file_name": file_id,
-            "total_chunks": 0,  # **这必须要更新**
-            "uploaded_chunks": []
-        }
+        return jsonify({"error": "File ID not found"}), 400
 
-    # ✅ **确保 `uploaded_chunks` 是列表**
+    # 更新已上传的分片信息
     if "uploaded_chunks" not in file_metadata[file_id]:
         file_metadata[file_id]["uploaded_chunks"] = []
-
-    # ✅ **避免重复添加 chunkIndex**
     if chunk_index not in file_metadata[file_id]["uploaded_chunks"]:
         file_metadata[file_id]["uploaded_chunks"].append(chunk_index)
 
-    # ✅ **更新 `total_chunks`**
-    total_chunks = int(request.form.get("totalChunks", 0))
-    if total_chunks > 0:
-        file_metadata[file_id]["total_chunks"] = total_chunks
-    print(f"total_chunks: {total_chunks}")
-
-    # ✅ **写回 metadata.json**
+    # 写回 metadata
     try:
         with open(METADATA_FILE, "w") as f:
             json.dump(file_metadata, f, indent=4)
-        print(f"✅ metadata.json updated successfully for {file_id}")
+        print(f"✅ Updated metadata: {file_metadata}")
     except Exception as e:
-        print(f"❌ Failed to write metadata.json: {e}")
+        return jsonify({"error": f"Failed to write metadata: {e}"}), 500
+    return jsonify({"message": "Metadata updated"})
 
-    return jsonify({"message": f"Chunk {chunk_index} uploaded"})
-
-
-### **Step 3: 合并分块**
-# @app.route("/upload/complete", methods=["POST"])
-# def complete_upload():
-#     file_id = request.json.get("fileId")
-
-#     if file_id not in file_metadata:
-#         return jsonify({"error": "File ID not found"}), 400
-
-#     metadata = file_metadata[file_id]
-#     file_name = metadata["file_name"]
-#     total_chunks = metadata["total_chunks"]
-#     uploaded_chunks = metadata["uploaded_chunks"]
-
-#     print(f"📌 Checking file completion: {file_id}")
-#     print(f"✅ Expected total chunks: {total_chunks}")
-#     print(f"✅ Uploaded chunks: {uploaded_chunks}")
-
-#     if len(uploaded_chunks) != total_chunks:
-#         missing_chunks = set(range(total_chunks)) - set(uploaded_chunks)
-#         print(f"❌ Missing chunks: {missing_chunks}")  # 🔥 这里打印缺失的分块
-#         return jsonify({"error": "Missing some chunks", "missing_chunks": list(missing_chunks)}), 400
-
-#     # if len(uploaded_chunks) != total_chunks:
-#     #     return jsonify({"error": "Missing some chunks"}), 400
-
-#     final_path = os.path.join(UPLOAD_FOLDER, file_name)
-
-#     with open(final_path, "wb") as final_file:
-#         for i in range(total_chunks):
-#             chunk_path = os.path.join(CHUNK_FOLDER, f"{file_id}_chunk_{i}")
-#             with open(chunk_path, "rb") as chunk_file:
-#                 final_file.write(chunk_file.read())
-#             os.remove(chunk_path)  # 删除分块
-
-#     del file_metadata[file_id]  # 清理 metadata
-
-#     return jsonify({"message": "File upload complete", "fileName": file_name})
-
+### **Step 4: 合并分块**
 @app.route("/upload/complete", methods=["POST"])
 def complete_upload():
-    print("nmd")
     file_id = request.json.get("fileId")
 
-    print(f"\n📌 Checking file completion: {file_id}")
-
-    # ✅ 确保 metadata.json 存在
-    if not os.path.exists(METADATA_FILE):
-        print("❌ metadata.json not found!")
-        return jsonify({"error": "metadata.json missing"}), 500
-
-    # ✅ 重新读取 metadata.json，确保数据完整
+    # 重新读取 metadata.json，确保数据是最新的
     try:
         with open(METADATA_FILE, "r") as f:
             content = f.read().strip()
             file_metadata = json.loads(content) if content else {}
     except Exception as e:
-        print(f"❌ Failed to read metadata.json: {e}")
-        return jsonify({"error": "Failed to read metadata.json"}), 500
+        return jsonify({"error": f"Failed to read metadata: {e}"}), 500
 
-    # ✅ 确保 `file_id` 存在
     if file_id not in file_metadata:
-        print(f"❌ File ID {file_id} not found in metadata.json")
         return jsonify({"error": "File ID not found"}), 400
 
     metadata = file_metadata[file_id]
@@ -283,50 +146,41 @@ def complete_upload():
     total_chunks = metadata["total_chunks"]
     uploaded_chunks = metadata.get("uploaded_chunks", [])
 
-    print(f"✅ Expected total chunks: {total_chunks}")
-    print(f"✅ Uploaded chunks from metadata: {uploaded_chunks}")
+    print(f"✅ Metadata from file: {metadata}")  # 打印从文件中读取的 metadata
 
-    # ✅ 确保 `uploaded_chunks` 是 **列表**
-    if not isinstance(uploaded_chunks, list):
-        print(f"❌ uploaded_chunks has invalid type: {type(uploaded_chunks)}")
-        return jsonify({"error": "Invalid uploaded_chunks format"}), 500
-
-    # ✅ 确保所有块都已上传
+    # 确保所有块都已上传
     missing_chunks = set(range(total_chunks)) - set(uploaded_chunks)
     if missing_chunks:
-        print(f"❌ Missing chunks: {missing_chunks}")
         return jsonify({"error": "Missing some chunks", "missing_chunks": list(missing_chunks)}), 400
 
-    # ✅ 确保 chunks 真的存在
-    for i in range(total_chunks):
-        chunk_path = os.path.join(CHUNK_FOLDER, f"{file_id}_chunk_{i}")
-        if not os.path.exists(chunk_path):
-            print(f"❌ Missing chunk file: {chunk_path}")
-            return jsonify({"error": "Missing chunk file", "chunk": i}), 500
-
-    # ✅ **合并文件**
+    # 合并文件
     final_path = os.path.join(UPLOAD_FOLDER, file_name)
     try:
         with open(final_path, "wb") as final_file:
             for i in range(total_chunks):
-                chunk_path = os.path.join(CHUNK_FOLDER, f"{file_id}_chunk_{i}")
-                with open(chunk_path, "rb") as chunk_file:
-                    final_file.write(chunk_file.read())
-                os.remove(chunk_path)  # ✅ **删除分块**
+                # 获取分片存储的节点服务器
+                chunks = {int(k): v for k, v in file_metadata[file_id]["chunks"].items()}
+                node_server = chunks[i]
+                # node_server = file_metadata[file_id]["chunks"][i]
+                # 从节点服务器下载分片
+                chunk_url = f"{node_server}/uploads/chunks/{file_id}_chunk_{i}"
+                response = requests.get(chunk_url)
+                if response.status_code != 200:
+                    return jsonify({"error": f"Failed to fetch chunk {i} from {node_server}"}), 500
+                final_file.write(response.content)
     except Exception as e:
-        print(f"❌ Error merging file: {e}")
-        return jsonify({"error": "File merge failed"}), 500
+        import traceback
+        error_message = traceback.format_exc()  # 获取详细的异常信息
+        print(f"File merge failed: {error_message}")  # 打印到日志或控制台
+        return jsonify({"error": f"File merge failed: {str(e)}"}), 500
 
-    print(f"✅ File {file_name} successfully merged and saved to {final_path}")
-
-    # ✅ **删除 metadata 记录**
+    # 删除 metadata 记录
     del file_metadata[file_id]
     try:
         with open(METADATA_FILE, "w") as f:
             json.dump(file_metadata, f, indent=4)
-        print(f"✅ metadata.json cleaned up for {file_id}")
     except Exception as e:
-        print(f"❌ Failed to update metadata.json: {e}")
+        return jsonify({"error": f"Failed to update metadata: {e}"}), 500
 
     return jsonify({"message": "File upload complete", "fileName": file_name})
 
