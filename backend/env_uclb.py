@@ -1,6 +1,4 @@
 import math
-from idlelib.pyparse import trans
-
 import gym
 from gym import spaces, logger
 import numpy as np
