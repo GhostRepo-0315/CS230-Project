@@ -158,9 +158,8 @@ if __name__ == '__main__':
         runner = Runner(args=args, number=1, seed=seed)
 
         # load the model
-        net = torch.load(f'rainbow_dqn_net_{runner.env.user_num}_users.pth')
-        target_net = torch.load(f'rainbow_dqn_target_net_{runner.env.user_num}_users.pth')
-        runner.agent.net, runner.agent.target_net = net, target_net
+        runner.agent.net = torch.load(f'rainbow_dqn_net_{runner.env.user_num}_users.pth',weights_only=False, map_location=torch.device('cpu'))
+        runner.agent.target_net = torch.load(f'rainbow_dqn_target_net_{runner.env.user_num}_users.pth', weights_only=False, map_location=torch.device('cpu'))
         runner.run()
 
 
