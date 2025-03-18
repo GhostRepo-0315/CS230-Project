@@ -4,7 +4,6 @@ import os
 import json
 import requests
 import random
-import rainbow_selection
 
 # 节点服务器列表
 NODE_SERVERS = [
