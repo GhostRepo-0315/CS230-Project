@@ -115,12 +115,11 @@ def update_metadata():
         file_metadata[file_id]["uploaded_chunks"] = []
     if chunk_index not in file_metadata[file_id]["uploaded_chunks"]:
         file_metadata[file_id]["uploaded_chunks"].append(chunk_index)
-
+        print(file_metadata[file_id]["uploaded_chunks"])
     # 写回 metadata
     try:
         with open(METADATA_FILE, "w") as f:
             json.dump(file_metadata, f, indent=4)
-        print(f"✅ Updated metadata: {file_metadata}")
     except Exception as e:
         return jsonify({"error": f"Failed to write metadata: {e}"}), 500
     return jsonify({"message": "Metadata updated"})
@@ -144,12 +143,13 @@ def complete_upload():
     metadata = file_metadata[file_id]
     file_name = metadata["file_name"]
     total_chunks = metadata["total_chunks"]
-    uploaded_chunks = metadata.get("uploaded_chunks", [])
+    uploaded_chunks = metadata.get("uploaded_chunks", [])[0]
 
     print(f"✅ Metadata from file: {metadata}")  # 打印从文件中读取的 metadata
 
     # 确保所有块都已上传
-    missing_chunks = set(range(total_chunks)) - set(uploaded_chunks)
+    print(total_chunks, uploaded_chunks)
+    missing_chunks = total_chunks - uploaded_chunks - 1
     if missing_chunks:
         return jsonify({"error": "Missing some chunks", "missing_chunks": list(missing_chunks)}), 400
 

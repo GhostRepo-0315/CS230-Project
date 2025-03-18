@@ -25,6 +25,7 @@
             }
 
             const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
+	    console.log(totalChunks)
             const fileId = Date.now().toString();  // 生成唯一的文件ID
 
             // Step 1: 上传元数据到主服务器
@@ -59,7 +60,6 @@
 
                 // Step 2.1: 获取分片分配的节点服务器
                 status.textContent = `Assigning chunk ${i + 1} of ${totalChunks}...`;
-		console.log(status.textContent);
                 let nodeServer;
                 try {
                     const assignResponse = await fetch(`${MAIN_SERVER}/upload/assign`, {
@@ -102,7 +102,7 @@
                         const errorData = await chunkResponse.json();
                         throw new Error(`Failed to upload chunk: ${errorData.error || chunkResponse.statusText}`);
                     }
-		    console.log(i);
+		    console.log(i)
                     // Step 2.3: 通知主服务器更新 metadata
                     const updateResponse = await fetch(`${MAIN_SERVER}/upload/update`, {
                         method: 'POST',

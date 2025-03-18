@@ -354,5 +354,74 @@
             "3": "http://54.67.117.71:7001",
             "4": "http://54.67.117.71:7001"
         }
+    },
+    "1742253869806": {
+        "file_name": "HW 4.pdf",
+        "total_chunks": 2,
+        "uploaded_chunks": [
+            1
+        ],
+        "chunks": {
+            "0": "http://52.53.207.217:7001",
+            "1": "http://54.67.117.71:7001"
+        }
+    },
+    "1742255539535": {
+        "file_name": "HW 4.pdf",
+        "total_chunks": 2,
+        "uploaded_chunks": [
+            1
+        ],
+        "chunks": {
+            "0": "http://54.67.117.71:7001",
+            "1": "http://54.67.117.71:7001"
+        }
+    },
+    "1742256561041": {
+        "file_name": "HW 4.pdf",
+        "total_chunks": 2,
+        "uploaded_chunks": [
+            1
+        ],
+        "chunks": {
+            "0": "http://18.144.171.222:7001",
+            "1": "http://18.144.171.222:7001"
+        }
+    },
+    "1742257266022": {
+        "file_name": "HW 4.pdf",
+        "total_chunks": 2,
+        "uploaded_chunks": [],
+        "chunks": {
+            "0": "http://52.53.207.217:7001",
+            "1": "http://52.53.207.217:7001"
+        }
+    },
+    "1742257942415": {
+        "file_name": "output.png",
+        "total_chunks": 1,
+        "uploaded_chunks": [],
+        "chunks": {
+            "0": "http://52.53.207.217:7001"
+        }
+    },
+    "1742257958495": {
+        "file_name": "HW 4.pdf",
+        "total_chunks": 2,
+        "uploaded_chunks": [
+            1
+        ],
+        "chunks": {
+            "0": "http://54.67.117.71:7001",
+            "1": "http://18.144.171.222:7001"
+        }
+    },
+    "1742258721394": {
+        "file_name": "Homework 2.pdf",
+        "total_chunks": 1,
+        "uploaded_chunks": [],
+        "chunks": {
+            "0": "http://18.144.171.222:7001"
+        }
     }
 }
