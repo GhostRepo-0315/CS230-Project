@@ -4,6 +4,7 @@ import os
 import json
 import requests
 import random
+import rainbow_selection
 
 # 节点服务器列表
 NODE_SERVERS = [
@@ -11,7 +12,8 @@ NODE_SERVERS = [
     "http://18.144.171.222:7001",
     "http://54.67.117.71:7001"
 ]
-
+with open('action_list.txt', 'r') as file:
+    loaded_action_list = file.read().splitlines()
 METADATA_FILE = "uploads/metadata.json"
 # 加载已有的 metadata（如果有的话）
 if os.path.exists(METADATA_FILE):
@@ -72,8 +74,11 @@ def assign_chunk():
         return jsonify({"error": "Invalid request"}), 400
 
     # 随机选择一个节点服务器
-    node_server = random.choice(NODE_SERVERS)
+    # node_server = random.choice(NODE_SERVERS)
 
+    # 基于DRL agent选择节点服务器
+    node_server = loaded_action_list[chunk_index]
+    
     # 记录分片分配的节点服务器
     if file_id not in file_metadata:
         return jsonify({"error": "File ID not found in metadata"}), 400
