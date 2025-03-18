@@ -4,7 +4,7 @@ from rainbow_agent import DQN
 import argparse
 import random
 
-seed_list = [40]
+seed_list = [37]
 
 NODE_SERVERS = [
     "http://52.53.207.217:7001",
@@ -84,6 +84,7 @@ class Runner:
             episode_steps = 0
             while not done:
                 action = self.agent.choose_action(state, epsilon=self.epsilon)
+                print("action:",action)
                 server = NODE_SERVERS[action]
                 self.action_list.append(server)
                 next_state, reward, done = self.env.step(action)
@@ -158,11 +159,15 @@ if __name__ == '__main__':
         runner = Runner(args=args, number=1, seed=seed)
 
         # load the model
-        runner.agent.net.load_state_dict = torch.load(f'rainbow_dqn_net_{runner.env.user_num}_users.pth')
-        runner.agent.target_net.load_state_dict = torch.load(f'rainbow_dqn_target_net_{runner.env.user_num}_users.pth')
+        runner.agent.net.load_state_dict = torch.load(f'rainbow_dqn_net_1_users.pth')
+        runner.agent.target_net.load_state_dict = torch.load(f'rainbow_dqn_target_net_1_users.pth')
         runner.run()
 
 
         with open('action_list.txt', 'w') as file:
             for item in runner.action_list:
                 file.write(f"{item}\n")
+
+        with open('action_list.txt', 'r') as file:
+            loaded_action_list = file.read().splitlines()
+        print(loaded_action_list)
